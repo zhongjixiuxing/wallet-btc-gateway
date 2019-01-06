@@ -1,0 +1,7 @@
+{
+  "name":"BTC Gateway",
+  "version": "v1.0.0",
+  "description": "",
+  "title": "API Docs",
+  "url": "http://api.coinpool.com/btc-gateway/v1"
+}
