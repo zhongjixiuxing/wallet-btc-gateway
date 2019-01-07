@@ -10,7 +10,7 @@ pipeline {
       steps {
         sh 'npm install'
         sh 'npm run postinstall'
-        sh 'npm run test'
+        sh 'NODE_ENV=test npm run test'
       }
     }
   }
