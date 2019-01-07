@@ -5,7 +5,7 @@ pipeline {
     }
   }
   environment{
-    NODE_ENV = test
+    NODE_ENV = 'test'
   }
   stages {
     stage('Test') {
