@@ -11,7 +11,7 @@ pipeline {
         sh 'npm install'
         sh 'npm run postinstall'
         sh 'npm run test'
-        mail(subject: 'test', body: 'test', replyTo: '1965198272@qq.com', to: '1965198272@qq.com')
+        input(message: 'Test-input', id: 'myp', ok: 'test-ok', submitter: 'test-submmiter', submitterParameter: 'test-SubmitterParameter')
       }
     }
   }
