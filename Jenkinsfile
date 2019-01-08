@@ -6,6 +6,12 @@ pipeline {
 
   }
   stages {
+    stage('Deploy') {
+      steps {
+        input(id: 'isDeploy', message: 'deploy to server?', ok: 'Yes', parameters: {string(name: 'ip', defaultValue: '192.168.199.229', description: 'what is your deploy server ip')})
+        echo "server ip : ${ip}"
+      }
+    }
     stage('Test') {
       steps {
         sh 'npm install'
