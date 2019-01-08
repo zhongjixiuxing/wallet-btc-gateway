@@ -12,10 +12,12 @@ pipeline {
         id 'Confirm'
         parameters {
           string(name: 'id', defaultValue: 'aninxg', description: 'input your server ip')
+          string(name: 'name', defaultValue: 'anxing', description: 'input your username')
         }
       }
       steps {
         echo "server ip : ${id}"
+        echo "username : ${name}"
       }
     }
     stage('Test') {
