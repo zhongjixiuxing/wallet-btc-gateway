@@ -8,7 +8,8 @@ pipeline {
   stages {
     stage('Deploy') {
       steps {
-        echo 'yser------------'
+        input(id: 'isDeploy', message: 'deploy to server?', ok: 'Yes')
+        echo "server ip : ${ip}"
       }
     }
     stage('Test') {
