@@ -18,6 +18,8 @@ pipeline {
       steps {
         echo "server ip : ${id}"
         echo "username : ${name}"
+        input(message: 'input your password', id: 'password', ok: 'confirm', parameters: {string(name: "password123", defaultValue: "asdf", description: "passwd")})
+        echo "password : ${password}"
       }
     }
     stage('Test') {
