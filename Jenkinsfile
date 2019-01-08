@@ -7,8 +7,14 @@ pipeline {
   }
   stages {
     stage('Deploy') {
+      input {
+        message 'What is your deployment server?'
+        id 'Confirm'
+        parameters {
+          string(name: 'id', defaultValue: 'aninxg', description: 'input your server ip')
+        }
+      }
       steps {
-        input(id: 'isDeploy', message: 'deploy to server?', ok: 'Yes')
         echo "server ip : ${ip}"
       }
     }
