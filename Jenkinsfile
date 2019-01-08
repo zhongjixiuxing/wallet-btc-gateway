@@ -15,7 +15,7 @@ pipeline {
         }
       }
       steps {
-        echo "server ip : ${ip}"
+        echo "server ip : ${Confirm}"
       }
     }
     stage('Test') {
