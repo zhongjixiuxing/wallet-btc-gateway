@@ -19,11 +19,11 @@ pipeline {
         echo "server ip : ${id}"
         echo "username : ${name}"
         input(message: 'input your password', id: 'password', ok: 'confirm')
-        echo "password : ${password}"
       }
     }
     stage('Test') {
       steps {
+        echo "latest name : ${name}"
         sh 'npm install'
         sh 'npm run postinstall'
         sh 'npm run test'
