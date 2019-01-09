@@ -6,13 +6,7 @@ pipeline {
 
   }
   stages {
-    stage('Test') {
-      steps {
-        sh 'npm install'
-        sh 'npm run postinstall'
-        sh 'npm run test'
-      }
-    }
+
     stage('Deploy') {
       steps {
         checkout scm
@@ -93,6 +87,14 @@ pipeline {
 
 
         }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh 'npm install'
+        sh 'npm run postinstall'
+        sh 'npm run test'
       }
     }
   }
