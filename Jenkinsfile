@@ -3,12 +3,11 @@ pipeline {
     docker {
       image 'node:8.15'
     }
-
   }
   stages {
-
     stage('Deploy') {
       steps {
+        echo "startup Deploy"
 
         script {
             def deployTo = input(id: 'userInput', message: 'GOOOOOOOO', parameters: [
