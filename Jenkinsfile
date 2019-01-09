@@ -73,8 +73,6 @@ pipeline {
           if (command == "") {
             command = "docker rm -f btc-gateway && docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
           }
-
-          sshCommand remote:remote, command: command
         }
       }
     }
