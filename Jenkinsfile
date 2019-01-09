@@ -7,8 +7,8 @@ pipeline {
   }
   stages {
     stage('Deploy') {
+      agent any
       steps {
-        echo 'startup Deploy'
         script {
           def deployTo = input(id: 'userInput', message: 'GOOOOOOOO', parameters: [
             [$class: 'ChoiceParameterDefinition', choices: ["none", "dev(localhost)", "production"], description: "What's the env of you want to deploy?", name: 'deployTo'],
