@@ -83,7 +83,7 @@ pipeline {
             }
 
             try {
-                sshCommand remote:remote command: command
+                sshCommand remote:remote, command: command
             } catch (exec) {
                 println("happen error")
                 println(exec)
