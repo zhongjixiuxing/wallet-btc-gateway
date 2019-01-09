@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:8.15'
-    }
-
-  }
+  agent any
   stages {
     stage('Deploy') {
       agent any
