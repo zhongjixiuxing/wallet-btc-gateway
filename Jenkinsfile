@@ -9,7 +9,6 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        checkout scm
 
         script {
             def deployTo = input(id: 'userInput', message: 'GOOOOOOOO', parameters: [
