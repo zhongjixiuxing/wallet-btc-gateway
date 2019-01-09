@@ -74,15 +74,8 @@ pipeline {
             command = "docker rm -f btc-gateway && docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
           }
 
-          try {
-            sshCommand remote:remote, command: command
-          } catch (exec) {
-            println("happen error")
-
-            throw exec
-          }
+          sshCommand remote:remote, command: command
         }
-
       }
     }
     stage('Test') {
