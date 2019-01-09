@@ -78,7 +78,6 @@ pipeline {
                 sshCommand remote:remote, command: command
             } catch (exec) {
                 println("happen error")
-                println(exec)
 
                 throw exec
             }
