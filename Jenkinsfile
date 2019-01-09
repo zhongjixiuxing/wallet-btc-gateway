@@ -31,6 +31,7 @@ pipeline {
             deployCfg.sshHost = "192.168.1.104"
             deployCfg.sshUser = "root"
             deployCfg.sshPassword = ""
+            deployCfg.customCommand = "";
 
             while(true) {
               deployCfg = input(id: 'deployCfg', message: 'Publish Configure', parameters: [
@@ -38,6 +39,7 @@ pipeline {
                  [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshHost}", description: "SSH host of deployment server", name: 'sshHost'],
                  [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshUser}", description: "SSH user name", name: 'sshUser'],
                  [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshPassword}", description: "SSH password", name: 'sshPassword'],
+                 [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customCommand}", description: "custom define exec publish command(option)", name: 'customCommand'],
               ])
 
               if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
@@ -62,11 +64,34 @@ pipeline {
               }
 
               deployCfg.sshPassword = deployCfg.sshPassword.trim()
+              deployCfg.customCommand = deployCfg.customCommand.trim()
               break;
             }
 
 
             def customImage = docker.build("${deployCfg.buildImageName}");
+
+            def remote = [:]
+            remote.host = deployCfg.sshHost
+            remote.user = deployCfg.sshUser
+            remote.password = deployCfg.sshPassword
+            remote.allowAnyHosts = true
+
+            def command = deployCfg.customCommand;
+            if (command == "") {
+                command = "docker rm -f btc-gateway && docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
+            }
+
+            try {
+                sshCommand remote:remote command: command
+            } catch (exec) {
+                println("happen error")
+                println(exec)
+
+                throw exec
+            }
+
+
         }
       }
     }
