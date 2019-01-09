@@ -6,11 +6,6 @@ pipeline {
 
   }
   stages {
-    stage('Deploy') {
-      steps {
-        echo 'startup Deploy'
-      }
-    }
     stage('Test') {
       steps {
         sh 'npm install'
