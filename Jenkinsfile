@@ -73,7 +73,7 @@ pipeline {
           echo ("command -------------- : ${command}")
 
           try {
-            sshCommand remote:remote, command: "ls -la"
+            sshCommand remote:remote, command:command
           } catch (exec) {
             println("happen error")
             println(exec)
