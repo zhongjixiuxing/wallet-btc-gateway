@@ -4,7 +4,7 @@ pipeline {
     stage('Test') {
       agent {
         docker {
-            image: 'node:8.15'
+            image 'node:8.15'
         }
       }
       steps {
