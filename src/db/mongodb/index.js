@@ -4,6 +4,7 @@ const env = process.env.NODE_ENV || 'test';
 const fs = require('fs');
 const join = require('path').join;
 const modelsPath = join(__dirname +  '/model');
+Mongoose.set('useCreateIndex', true);
 
 const startup = async () => {
     let mongoUri;
