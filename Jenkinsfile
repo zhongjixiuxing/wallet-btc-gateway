@@ -67,10 +67,8 @@ pipeline {
 
           def command = deployCfg.customCommand
           if (command == "") {
-            command = "docker rm -f btc-gateway && docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
+            command = "docker rm -f btc-gateway || docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
           }
-
-          echo ("command -------------- : ${command}")
 
           try {
             sshCommand remote:remote, command:command
