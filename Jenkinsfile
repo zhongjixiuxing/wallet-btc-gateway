@@ -59,6 +59,7 @@ pipeline {
           def customImage = docker.build("${deployCfg.buildImageName}")
 
           def remote = [:]
+          remote.name = deployCfg.sshHost
           remote.host = deployCfg.sshHost
           remote.user = deployCfg.sshUser
           remote.password = deployCfg.sshPassword
