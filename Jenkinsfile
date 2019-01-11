@@ -26,7 +26,7 @@ pipeline {
               }
 
               def deployCfg = [:]
-              deployCfg.buildImageName = "btc-gateway:latest"
+              deployCfg.buildImageName = 'btc-gateway:latest'
               deployCfg.sshHost = "192.168.1.104"
               deployCfg.sshUser = "root"
               deployCfg.sshPassword = ""
