@@ -8,12 +8,9 @@ pipeline {
         }
       }
       steps {
-        echo "skip..."
-      /*
         sh 'npm install'
         sh 'npm run postinstall'
         sh 'npm run test'
-        */
       }
     }
     stage('Deploy') {
@@ -44,7 +41,6 @@ pipeline {
                   [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customCommand}", description: "custom define exec publish command(option)", name: 'customCommand'],
                 ])
 
-                echo 'o --------------------------'
                 if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
                   input(message: 'Invalid build image name')
                   continue
@@ -52,7 +48,6 @@ pipeline {
                   deployCfg.buildImageName = deployCfg.buildImageName.trim()
                 }
 
-                echo '12-------------------------'
                 if (!deployCfg.sshHost || deployCfg.sshHost.trim() == "") {
                   input(message: 'Invalid SSH host!')
                   continue
@@ -60,7 +55,6 @@ pipeline {
                   deployCfg.sshHost = deployCfg.sshHost.trim()
                 }
 
-                 echo '13-------------------------'
                 if (!deployCfg.sshUser || deployCfg.sshUser.trim() == "") {
                   input(message: 'Invalid SSH user!')
                   continue
@@ -68,7 +62,6 @@ pipeline {
                   deployCfg.sshUser = deployCfg.sshUser.trim()
                 }
 
-                 echo '15-------------------------'
                 deployCfg.sshPassword = deployCfg.sshPassword.trim()
                 if (deployCfg.customCommand) {
                     deployCfg.customCommand = deployCfg.customCommand.trim()
@@ -77,10 +70,7 @@ pipeline {
                 break
               }
 
-              echo ("deployCfg 2: " + deployCfg)
 
-
-                /*
               def customImage = docker.build("${deployCfg.buildImageName}")
 
               def remote = [:]
@@ -103,7 +93,6 @@ pipeline {
 
                 throw exec
               }
-              */
             }
 
           }
