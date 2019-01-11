@@ -69,7 +69,10 @@ describe('Wallet', () => {
                             assert.deepEqual(res.body.err, errorCodes.OK);
 
                             assert.ownProperty(res.body.data, 'id');
+                            assert.ownProperty(res.body.data, 'name');
+                            assert.notOwnProperty(res.body.data, 'hash');
                             assert.equal(data.id, res.body.data.id);
+                            assert.equal(data.name, res.body.data.name);
 
                             return Wallet.findOne({id: data.id});
                         }
@@ -80,6 +83,26 @@ describe('Wallet', () => {
                             assert.equal(wallet.id, data.id);
                             assert.equal(wallet.name, data.name);
                             assert.equal(wallet.type, Wallet.schema.types.mnemonic); // default type
+                            done();
+                        },
+                        err => done(err)
+                    );
+            });
+
+            it ('get wallet if hash exists', done => {
+                let data = baseData.wallets[0];
+
+                createWallet(data)
+                    .flatMap(res => createWallet(data))
+                    .subscribe(
+                        res => {
+                            assert.deepEqual(res.body.err, errorCodes.OK);
+
+                            assert.ownProperty(res.body.data, 'id');
+                            assert.ownProperty(res.body.data, 'name');
+                            assert.notOwnProperty(res.body.data, 'hash');
+                            assert.equal(data.id, res.body.data.id);
+                            assert.equal(data.name, res.body.data.name);
                             done();
                         },
                         err => done(err)
@@ -108,7 +131,8 @@ describe('Wallet', () => {
                 let data = {
                     id: 'c51c80c2-66a1-442a-91e2-4f55b4256a72',
                     name: 'wallet-name',
-                    type: 'mnemonic'
+                    type: 'mnemonic',
+                    hash: 'c51c80c2-66a1-442a-91e2-4f55b4256a72'
                 };
 
                 createWallet(data)
@@ -121,19 +145,24 @@ describe('Wallet', () => {
                     )
             });
 
-            it('duplicate create', done => {
+            it('miss hash parameter', done => {
                 let data = {
                     id: 'c51c80c2-66a1-442a-91e2-4f55b4256a72',
                     name: 'wallet-name'
                 };
 
                 return createWallet(data)
-                    .flatMap(res => {
-                        return createWallet(data)
-                    })
                     .subscribe(
                         res => {
-                            assert.equal(res.body.err, errorCodes.DuplicateRequest);
+                            assert.equal(res.body.err, errorCodes.ParamsError);
+
+                            assert.deepInclude(res.body.data,{
+                                "location": "params",
+                                "param": "hash",
+                                "msg": "Invalid value"
+                            });
+
+
                             done();
                         },
                         err => done(err)

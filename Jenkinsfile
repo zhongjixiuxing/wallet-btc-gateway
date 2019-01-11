@@ -63,7 +63,10 @@ pipeline {
                 }
 
                 deployCfg.sshPassword = deployCfg.sshPassword.trim()
-                deployCfg.customCommand = deployCfg.customCommand.trim()
+                if (deployCfg.customCommand) {
+                    deployCfg.customCommand = deployCfg.customCommand.trim()
+                }
+
                 break
               }
 
@@ -78,7 +81,7 @@ pipeline {
               remote.allowAnyHosts = true
 
               def command = deployCfg.customCommand
-              if (command == "") {
+              if (!command || command == "") {
                 command = "docker rm -f btc-gateway || docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
               }
 

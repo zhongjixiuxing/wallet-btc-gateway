@@ -13,8 +13,9 @@ const {WalletTool} = require('../services/WalletTool');
  *
  * @apiParam {String} id 钱包id, UUID v4 格式
  * @apiParam {String} name 钱包名称
- * @apiParam [Enum = mnemonic] type 钱包类型
+ * @apiParam {Enum} [type="mnemonic"] 钱包类型
  *      mnemonic  <==>  助记词
+ * @apiParam {String} hash 钱包的特殊hash值, 这个也是能确定一个钱包的唯一性. 如果当前系统存在hash, 则返回存在wallet 数据
  *
  * @apiSuccess {String} id 请求创建成功的id, 与请求的id一致.
  *
@@ -27,7 +28,6 @@ router.post('', RateLimiter({windowMs: 60000, max: 5}), catchAsyncErrors(async (
 
     const validation = {
         id: {
-
             trim: true,
             notEmpty: true,
             isUUID: {
@@ -50,6 +50,10 @@ router.post('', RateLimiter({windowMs: 60000, max: 5}), catchAsyncErrors(async (
             isIn: {
                 options: map(Wallet.schema.types)
             }
+        },
+        hash: {
+            trim: true,
+            notEmpty: true,
         }
     };
 
@@ -58,12 +62,18 @@ router.post('', RateLimiter({windowMs: 60000, max: 5}), catchAsyncErrors(async (
     }
 
 
-    let wallet = new Wallet();
-    wallet.id = req.body.id;
-    wallet.name = req.body.name;
+    let wallet = await Wallet.findOne({
+        hash: req.body.hash
+    });
+    if (!wallet) {
+        wallet = new Wallet();
+        wallet.id = req.body.id;
+        wallet.name = req.body.name;
+        wallet.hash = req.body.hash;
 
-    if (!isEmpty(req.body.type)) {
-        wallet.type = req.body.type;
+        if (!isEmpty(req.body.type)) {
+            wallet.type = req.body.type;
+        }
     }
 
     try {
@@ -76,7 +86,7 @@ router.post('', RateLimiter({windowMs: 60000, max: 5}), catchAsyncErrors(async (
         throw e;
     }
 
-    resJson(res, {id: wallet.id});
+    resJson(res, {id: wallet.id, name: wallet.name});
 }));
 
 /**

@@ -10,6 +10,8 @@ const Wallet = new Scheme({
     id: {type: String, unique: true, index: true},
     name: {type: String, default: 'wallet'},
     type: {type: String, default: types.mnemonic},
+    hash: {type: String, unique: true, index: true},
+
     // createdAt: {type: Date, default: Date.now()}
 }, {
     autoIndex: true,
