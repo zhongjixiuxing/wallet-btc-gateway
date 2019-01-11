@@ -41,6 +41,7 @@ pipeline {
                   [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customCommand}", description: "custom define exec publish command(option)", name: 'customCommand'],
                 ])
 
+                 echo (deployCfg)
                 if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
                   input(message: 'Invalid build image name')
                   continue
