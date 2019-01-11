@@ -46,7 +46,7 @@ pipeline {
 
 
 
-                 echo ("deployCfg : ", deployCfg)
+                 echo (deployCfg)
                 if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
                   input(message: 'Invalid build image name')
                   continue
@@ -54,6 +54,7 @@ pipeline {
                   deployCfg.buildImageName = deployCfg.buildImageName.trim()
                 }
 
+                echo '12-------------------------'
                 if (!deployCfg.sshHost || deployCfg.sshHost.trim() == "") {
                   input(message: 'Invalid SSH host!')
                   continue
@@ -61,6 +62,7 @@ pipeline {
                   deployCfg.sshHost = deployCfg.sshHost.trim()
                 }
 
+                 echo '13-------------------------'
                 if (!deployCfg.sshUser || deployCfg.sshUser.trim() == "") {
                   input(message: 'Invalid SSH user!')
                   continue
@@ -68,6 +70,7 @@ pipeline {
                   deployCfg.sshUser = deployCfg.sshUser.trim()
                 }
 
+                 echo '15-------------------------'
                 deployCfg.sshPassword = deployCfg.sshPassword.trim()
                 if (deployCfg.customCommand) {
                     deployCfg.customCommand = deployCfg.customCommand.trim()
