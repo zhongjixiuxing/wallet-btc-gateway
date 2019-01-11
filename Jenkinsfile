@@ -8,9 +8,12 @@ pipeline {
         }
       }
       steps {
+        echo "skip..."
+      /*
         sh 'npm install'
         sh 'npm run postinstall'
         sh 'npm run test'
+        */
       }
     }
     stage('Deploy') {
@@ -86,7 +89,10 @@ pipeline {
                 break
               }
 
+              echo ("deployCfg 2: " + deployCfg)
 
+
+                /*
               def customImage = docker.build("${deployCfg.buildImageName}")
 
               def remote = [:]
@@ -109,6 +115,7 @@ pipeline {
 
                 throw exec
               }
+              */
             }
 
           }
