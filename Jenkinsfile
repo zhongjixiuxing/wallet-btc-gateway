@@ -33,6 +33,19 @@ pipeline {
               deployCfg.customCommand = ""
 
               while(true) {
+                deployCfg = input {
+                  message 'Publish Configure'
+                  id 'deployCfg'
+                  parameters {
+                    [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.buildImageName}", description: "What's the build image name", name: 'buildImageName'],
+                    [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshHost}", description: "SSH host of deployment server", name: 'sshHost'],
+                    [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshUser}", description: "SSH user name", name: 'sshUser'],
+                    [$class: 'PasswordParameterDefinition', defaultValue: "${deployCfg.sshPassword}", description: "SSH password", name: 'sshPassword'],
+                    [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customCommand}", description: "custom define exec publish command(option)", name: 'customCommand'],
+                  }
+                }
+
+                /*
                 deployCfg = input(id: 'deployCfg', message: 'Publish Configure', parameters: [
                   [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.buildImageName}", description: "What's the build image name", name: 'buildImageName'],
                   [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshHost}", description: "SSH host of deployment server", name: 'sshHost'],
@@ -40,8 +53,10 @@ pipeline {
                   [$class: 'PasswordParameterDefinition', defaultValue: "${deployCfg.sshPassword}", description: "SSH password", name: 'sshPassword'],
                   [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customCommand}", description: "custom define exec publish command(option)", name: 'customCommand'],
                 ])
+                */
 
-                 echo (deployCfg)
+
+                 echo ("deployCfg : " + deployCfg)
                 if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
                   input(message: 'Invalid build image name')
                   continue
