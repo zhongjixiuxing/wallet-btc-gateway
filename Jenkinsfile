@@ -47,6 +47,7 @@ pipeline {
 
 
                  echo (deployCfg)
+                 echo ("buildImageName : " + deployCfg.buildImageName)
                 if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
                   input(message: 'Invalid build image name')
                   continue
