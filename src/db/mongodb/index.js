@@ -22,6 +22,8 @@ const startup = async () => {
         });
     }
 
+    console.log('mongo connenct to : ', mongoUri);
+
     //loading models
     fs.readdirSync(modelsPath)
         .filter(file => ~file.search(/^[^\.].*\.js$/))

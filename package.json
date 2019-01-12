@@ -7,7 +7,8 @@
     "postinstall": "node patch.js",
     "start": "node bin/www.js",
     "test": "node_modules/.bin/mocha test --exit --recursive",
-    "docs": "node_modules/.bin/apidoc -i src/controller -o docs/apidoc"
+    "docs": "node_modules/.bin/apidoc -i src/controller -o docs/apidoc",
+    "docs-server": "npm run docs && lite-server --baseDir=docs/apidoc"
   },
   "author": "anxing",
   "license": "ISC",

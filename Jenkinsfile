@@ -31,6 +31,7 @@ pipeline {
               deployCfg.sshUser = "root"
               deployCfg.sshPassword = ""
               deployCfg.customCommand = ""
+              deployCfg.customEnv = ""
 
               while(true) {
                 deployCfg = input(id: 'deployCfg', message: 'Publish Configure', parameters: [
@@ -39,6 +40,7 @@ pipeline {
                   [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshUser}", description: "SSH user name", name: 'sshUser'],
                   [$class: 'StringParameterDefinition', defaultValue: "${deployCfg.sshPassword}", description: "SSH password", name: 'sshPassword'],
                   [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customCommand}", description: "custom define exec publish command(option)", name: 'customCommand'],
+                  [$class: 'TextParameterDefinition', defaultValue: "${deployCfg.customEnv}", description: "custom define server env(option)", name: 'customEnv'],
                 ])
 
                 if (!deployCfg.buildImageName || deployCfg.buildImageName.trim() == "") {
@@ -67,6 +69,10 @@ pipeline {
                     deployCfg.customCommand = deployCfg.customCommand.trim()
                 }
 
+                if (deployCfg.customEnv) {
+                    deployCfg.customEnv = deployCfg.customEnv.trim()
+                }
+
                 break
               }
 
@@ -82,8 +88,11 @@ pipeline {
 
               def command = deployCfg.customCommand
               if (!command || command == "") {
-                command = "docker rm -f btc-gateway || docker run -id --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName} || echo continue... "
+                command = "docker rm -f btc-gateway || docker run -id ${deployCfg.customEnv} --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName} || echo continue... "
               }
+
+              deployCfg.customEnv = 'docker run ' + deployCfg.customEnv
+              command = command.replace('docker run ', deployCfg.customEnv)
 
               try {
                 sshCommand remote:remote, command:command
