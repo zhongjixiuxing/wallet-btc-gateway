@@ -88,7 +88,7 @@ pipeline {
 
               def command = deployCfg.customCommand
               if (!command || command == "") {
-                command = "$(nohup docker rm -f btc-gateway &) && docker run -id ${deployCfg.customEnv} --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
+                command = "\$(nohup docker rm -f btc-gateway &) && docker run -id ${deployCfg.customEnv} --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
               }
 
               deployCfg.customEnv = 'docker run ' + deployCfg.customEnv
