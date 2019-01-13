@@ -88,13 +88,14 @@ pipeline {
 
               def command = deployCfg.customCommand
               if (!command || command == "") {
-                command = "\$(nohup docker rm -f btc-gateway &) && docker run -id ${deployCfg.customEnv} --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
+                command = "docker run -id ${deployCfg.customEnv} --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
               }
 
               deployCfg.customEnv = 'docker run ' + deployCfg.customEnv
               command = command.replace('docker run ', deployCfg.customEnv)
 
               try {
+                sshCommand remote:remote, command:'docker rm -f btc-gateway'
                 sshCommand remote:remote, command:command
               } catch (exec) {
                 println("happen error")
