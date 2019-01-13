@@ -98,7 +98,7 @@ pipeline {
 
               try {
                 sshCommand remote:remote, command:'nohup docker rm -f btc-gateway &'
-                sshCommand remote:remote, command:'sleep 5'
+                sshCommand remote:remote, command:'sleep 5 && echo yes'
                 sshCommand remote:remote, command:command
               } catch (exec) {
                 println("happen error")
