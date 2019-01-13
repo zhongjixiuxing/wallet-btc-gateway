@@ -95,7 +95,7 @@ pipeline {
               command = command.replace('docker run ', deployCfg.customEnv)
 
               try {
-                sshCommand remote:remote, command:'docker rm -f btc-gateway'
+                sshCommand remote:remote, command:'nohup docker rm -f btc-gateway &'
                 sshCommand remote:remote, command:command
               } catch (exec) {
                 println("happen error")
