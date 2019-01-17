@@ -9,10 +9,11 @@ Mongoose.set('useCreateIndex', true);
 const startup = async () => {
     let mongoUri;
     if (env === 'test') {
-        const MongodbMemoryServer = require('mongodb-memory-server').default;
-        let mongoMemoryServer = new MongodbMemoryServer();
-        mongoUri = await mongoMemoryServer.getConnectionString();
-        await Mongoose.connect(mongoUri, { useNewUrlParser: true });
+        const {MongoMemoryServer} = require('mongodb-memory-server');
+        let mongod = new MongoMemoryServer();
+        mongoUri = await mongod.getConnectionString();
+
+        await Mongoose.connect(mongoUri, {});
     } else {
         mongoUri = config.mongodbUri;
         await Mongoose.connect(mongoUri, {

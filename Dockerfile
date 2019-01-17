@@ -7,7 +7,7 @@ WORKDIR /workspace
 COPY ./ /workspace
 
 # remove unless source files
-RUN rm -rf test .gitignore Dockerfile Jenkinsfile .git node_modules docs
+RUN rm -rf test .gitignore Dockerfile Jenkinsfile .git node_modules docs 项目总结.md
 RUN npm i
 
 EXPOSE 3000
