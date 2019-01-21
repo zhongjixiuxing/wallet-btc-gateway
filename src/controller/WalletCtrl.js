@@ -139,6 +139,7 @@ router.get('', RateLimiter({windowMs: 60000, max: 30}), catchAsyncErrors(async (
             id: coin._id,
             coin: coin.coin,
             path: coin.path,
+            isFirstFullScan: coin.isFirstFullScan,
             createdAt: coin.createdAt.getTime()
         });
     });
@@ -151,6 +152,10 @@ router.get('', RateLimiter({windowMs: 60000, max: 30}), catchAsyncErrors(async (
  *
  * @api {post} /wallet/coin/next_path 获取并更新下个路径
  * @apiGroup Wallet
+ *
+ *
+ * @apiParam {String} walletId 钱包id, UUID v4 格式
+ * @apiParam {Enum} coin wallet coin type
  *
  * @apiSuccess {String} path string bip44 格式
  *
@@ -218,5 +223,71 @@ router.post('/coin/next_path', RateLimiter({windowMs: 60000, max: 30}), catchAsy
     resJson(res, {path});
 }));
 
+/**
+ *
+ * @api {post} /wallet/coin/update_scan_flag 更新coin full scan 配置信息
+ * @apiGroup Wallet
+ *
+ * @apiParam {String} walletId 钱包id, UUID v4 格式
+ * @apiParam {path} [path] 可选. 同时更新路径
+ * @apiParam {Enum} coin wallet coin type
+ *
+ * @apiError {String} path string bip44 格式
+ *
+ * @apiVersion v1.0.0
+ */
+router.post('/coin/update_scan_flag', RateLimiter({windowMs: 60000, max: 15}), catchAsyncErrors(async (req, res) => {
+    const {Wallet, WalletCoin} = Mongoose.models;
+    const validation = {
+        walletId: {
+            trim: true,
+            notEmpty: true,
+            isUUID: {
+                options: 4,
+            }
+        },
+        coin:{
+            isIn: {
+                options: map(WalletCoin.schema.Coins)
+            }
+        },
+        path: {
+            trim: true,
+            optional:true
+        }
+    };
+
+    if (!await checkParams(req, res, validation, true)) {
+        return;
+    }
+
+    let wallet = await Wallet.findOne({id: req.body.walletId});
+    if (!wallet) {
+        return resJson(res, [{
+            "location": "body",
+            "param": "walletId",
+            "msg": "Invalid value",
+            "value": req.body.walletId
+        }], errorCodes.ParamsError);
+    }
+
+    let coin = await WalletCoin.findOne({wallet: wallet, coin: req.body.coin}).populate('wallet');
+    if (!coin) {
+        return resJson(res, {resource: 'COIN'}, errorCodes.NotFound);
+    }
+
+    if (coin.isFirstFullScan) {
+        return resJson(res, null, errorCodes.DuplicateRequest);
+    }
+
+    coin.isFirstFullScan= true;
+
+    if (!isEmpty(req.body.path)) {
+        coin.path = req.body.path;
+    }
+
+    await coin.save();
+    resJson(res, null);
+}));
 
 module.exports = router;

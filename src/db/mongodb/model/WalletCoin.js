@@ -15,7 +15,8 @@ const WalletCoin = new Scheme({
         ref: 'Wallet'
     },
     coin: {type: String, default: 'BTC'},
-    path: {type: String}
+    path: {type: String},
+    isFirstFullScan: {type: Boolean, default: false}
 }, {
     timestamps: {
         createdAt: 'createdAt',

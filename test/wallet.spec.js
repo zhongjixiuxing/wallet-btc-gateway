@@ -5,7 +5,7 @@ const {errorCodes} = require('../src/services/common');
 const {map, last} = require('lodash');
 const sinon = require('sinon');
 const {clearDatabase, jsonToQueryString} = require('./tool/tool');
-const {getWallet, createWallet, getWalletNextPath} = require('./tool/request');
+const {getWallet, createWallet, getWalletNextPath, updateWalletCoinScanFlag} = require('./tool/request');
 const {baseData} = require('./tool/data');
 const superagent = require('superagent');
 const superagentMock = require('superagent-mock');
@@ -200,7 +200,7 @@ describe('Wallet', () => {
                 createWallet(data)
                     .flatMap(res => createWallet(baseData.wallets[1]))
                     .flatMap(res => getWallet({id: data.id}))
-                    .subscribe(
+                    .flatMap(
                         res => {
                             assert.deepStrictEqual(res.body.err, errorCodes.OK);
                             assert.ownProperty(res.body.data, 'id');
@@ -212,6 +212,21 @@ describe('Wallet', () => {
                             assert.deepStrictEqual(res.body.data.name, data.name);
                             assert.typeOf(res.body.data.createdAt, 'number');
                             assert.deepStrictEqual(res.body.data.coins.length, 0);
+
+                            return getWalletNextPath({
+                                walletId: res.body.data.id,
+                                coin: 'BTC'
+                            });
+                        }
+                    )
+                    .flatMap(
+                        res => {
+                            assert.deepStrictEqual(res.body.err, errorCodes.OK);
+                            return getWallet({id: data.id});
+                        }
+                    )
+                    .subscribe(
+                        res => {
                             done();
                         },
                         err => done(err)
@@ -438,6 +453,186 @@ describe('Wallet', () => {
             });
 
         });
+
+        describe('update_scan_flag', () => {
+            it('work', done => {
+                let walletData = baseData.wallets[0];
+
+                createWallet(walletData)
+                    .flatMap(res => getWalletNextPath({walletId: walletData.id, coin: 'BTC'}))
+                    .flatMap(
+                        res => {
+                            return updateWalletCoinScanFlag({
+                                walletId: walletData.id,
+                                coin: 'BTC'
+                            });
+                        }
+                    )
+                    .flatMap(res => {
+                        assert.deepStrictEqual(res.body.err, errorCodes.OK);
+                        return Wallet.findOne({id: walletData.id});
+                    })
+                    .flatMap(
+                        res => {
+                            return WalletCoin.findOne({wallet: res, coin: 'BTC'});
+                        }
+                    )
+                    .subscribe(
+                        res => {
+                            assert.deepStrictEqual(true, !!res);
+                            assert.deepStrictEqual(true, res.isFirstFullScan);
+                            done();
+                        },
+                        err => done(err)
+                    )
+            });
+
+            it('work with path', done => {
+                let walletData = baseData.wallets[0];
+                let path = "m/44'/0'/0'/0'123";
+
+                createWallet(walletData)
+                    .flatMap(res => getWalletNextPath({walletId: walletData.id, coin: 'BTC'}))
+                    .flatMap(
+                        res => {
+                            return updateWalletCoinScanFlag({
+                                walletId: walletData.id,
+                                coin: 'BTC',
+                                path
+                            });
+                        }
+                    )
+                    .flatMap(res => {
+                        assert.deepStrictEqual(res.body.err, errorCodes.OK);
+                        return Wallet.findOne({id: walletData.id});
+                    })
+                    .flatMap(
+                        res => {
+                            return WalletCoin.findOne({wallet: res, coin: 'BTC'});
+                        }
+                    )
+                    .subscribe(
+                        res => {
+                            assert.deepStrictEqual(true, !!res);
+                            assert.deepStrictEqual(path, res.path);
+                            done();
+                        },
+                        err => done(err)
+                    )
+            });
+
+            it('fail if coin not init', done => {
+                let walletData = baseData.wallets[0];
+
+                createWallet(walletData)
+                    .flatMap(
+                        res => {
+                            return updateWalletCoinScanFlag({
+                                walletId: walletData.id,
+                                coin: 'BTC'
+                            });
+                        }
+                    )
+                    .subscribe(
+                        res => {
+                            assert.deepStrictEqual(res.body.err, errorCodes.NotFound);
+                            assert.ownProperty(res.body.data, 'resource');
+                            assert.deepStrictEqual(res.body.data.resource, 'COIN');
+
+                            done();
+                        },
+                        err => done(err)
+                    )
+            });
+
+            it('duplication request', done => {
+                let walletData = baseData.wallets[0];
+
+                createWallet(walletData)
+                    .flatMap(res => getWalletNextPath({walletId: walletData.id, coin: 'BTC'}))
+                    .flatMap(
+                        res => {
+                            return updateWalletCoinScanFlag({
+                                walletId: walletData.id,
+                                coin: 'BTC'
+                            });
+                        }
+                    )
+                    .flatMap(
+                        res => {
+                            return updateWalletCoinScanFlag({
+                                walletId: walletData.id,
+                                coin: 'BTC'
+                            });
+                        }
+                    )
+                    .subscribe(
+                        res => {
+                            assert.deepStrictEqual(res.body.err, errorCodes.DuplicateRequest);
+                            done();
+                        },
+                        err => done(err)
+                    )
+            });
+
+            it('request with invalid coin[123]', done => {
+                let walletData = baseData.wallets[0];
+
+                createWallet(walletData)
+                    .flatMap(res => getWalletNextPath({walletId: walletData.id, coin: 'BTC'}))
+                    .flatMap(
+                        res => {
+                            return updateWalletCoinScanFlag({
+                                walletId: walletData.id,
+                                coin: '123'
+                            });
+                        }
+                    )
+                    .subscribe(
+                        res => {
+                            assert.deepStrictEqual(res.body.err, errorCodes.ParamsError);
+                            assert.deepInclude(res.body.data, {
+                                "location": "body",
+                                "param": "coin",
+                                "msg": "Invalid value",
+                                "value": "123"
+                            });
+                            done();
+                        },
+                        err => done(err)
+                    )
+            });
+
+            it('DDOS request', done => {
+                let walletData = baseData.wallets[0];
+                createWallet(walletData)
+                    .flatMap(
+                        res => {
+                            let promises = [];
+                            for(let i=0; i<50; i++) {
+                                promises.push(updateWalletCoinScanFlag({
+                                    walletId: walletData.id,
+                                    coin: 'BTC'
+                                }));
+                            }
+
+                            return Rx.Observable.zip(...promises);
+                        }
+                    )
+                    .subscribe(
+                        promises => {
+                            assert.isNotEmpty(promises);
+                            let lastRequest = last(promises);
+                            assert.isTrue(!!lastRequest);
+                            assert.deepStrictEqual(lastRequest.status, 429);
+                            assert.deepStrictEqual(lastRequest.text, 'Too many requests, please try again later.');
+
+                            done();
+                        },
+                        err => done(err)
+                    )
+            });
+        })
     });
 
     describe('IntegrationTest', () => {

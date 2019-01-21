@@ -44,6 +44,7 @@
  *          id: String, 钱包唯一凭证, UUID V4 格式
  *          walletId: String 钱包id
  *          createdAt: Timestamp 创建时间戳(UTC, 精度位ms/毫秒)
+ *          isFirstFullScan: Boolean 当前coin是否完成了第一次初始化扫描操作
  *          coin: Enum  货币名称
  *              BTC   <==>
  *              BCH   <==>

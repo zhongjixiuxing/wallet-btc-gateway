@@ -40,6 +40,10 @@ function getWalletNextPath(data) {
     return request('/v1/wallet/coin/next_path', data);
 }
 
+function updateWalletCoinScanFlag(data) {
+    return request('/v1/wallet/coin/update_scan_flag', data);
+}
+
 /***
  * request BTC w网络节点
  *
@@ -62,4 +66,5 @@ module.exports = {
     getWallet,
     getWalletNextPath,
     requestBtcNode,
+    updateWalletCoinScanFlag,
 };
