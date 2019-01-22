@@ -103,6 +103,8 @@ pipeline {
                 println(e)
               }
 
+              sleep 5
+
               try {
                 sshCommand remote:remote, command:command
               } catch (exec) {
