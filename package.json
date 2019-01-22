@@ -32,7 +32,7 @@
     "line-replace": "^1.0.2",
     "mocha": "^5.2.0",
     "mongodb-memory-server": "^3.0.0",
-    "sinon": "^7.2.2",
+    "sinon": "^7.2.3",
     "superagent-mock": "^3.7.0"
   }
 }

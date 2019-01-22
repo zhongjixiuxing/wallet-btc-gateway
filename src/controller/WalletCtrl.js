@@ -5,6 +5,7 @@ const {catchAsyncErrors, resJson, checkParams, errorCodes, resTooManyRequest} = 
 const {map, isEmpty}  = require('lodash');
 const {RateLimiter} = require('../services/rateLimiter');
 const {WalletTool} = require('../services/WalletTool');
+const {Logger} = require('../services/Logger');
 
 
 /**
@@ -207,20 +208,10 @@ router.post('/coin/next_path', RateLimiter({windowMs: 60000, max: 30}), catchAsy
         }
     }
 
-    let path;
-    try {
-        path = await WalletTool.nextPath(coin);
-    } catch (e) {
-        if (e.hasOwnProperty('message') && e.message === 'WalletExists') {
-            return resJson(res, {message: 'create wallet to node error'}, errorCodes.ServerError);
-        }
-
-        throw e;
-    }
-    coin.path = path; // update path
+    coin.path = await WalletTool.nextPath(coin); // update path
 
     await coin.save();
-    resJson(res, {path});
+    resJson(res, {path: coin.path});
 }));
 
 /**

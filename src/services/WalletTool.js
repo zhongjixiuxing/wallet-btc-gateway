@@ -2,7 +2,7 @@ const Mongoose = require('mongoose');
 const {isEmpty, last, join} = require('lodash');
 const superagent = require('superagent');
 const config = require('../config/cfg');
-
+const {Logger} = require('./Logger');
 function WalletTool() {}
 
 
@@ -31,7 +31,8 @@ async function nextPathByBTC(walletCoin) {
                 && e.hasOwnProperty('response') && e.response.hasOwnProperty('body')
                 && e.response.body.hasOwnProperty('error') && e.response.body.error.code === -4
             ) {
-                throw new Error('WalletExists');
+                Logger.warn('[coin/next_path] WalletExists', {id: walletCoin.wallet.id});
+                // throw new Error('WalletExists'); //ignore
             } else {
                 throw e;
             }

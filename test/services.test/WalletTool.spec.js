@@ -9,6 +9,7 @@ const superagent = require('superagent');
 const {errorCodes} = require('../../src/services/common');
 const superagentMock = require('superagent-mock');
 const {superagetnMockCfg, btcRpcConfig, resetResonseConfig} = require('../tool/superagent-mock.config');
+const {Logger} = require('../../src/services/Logger');
 
 let app;
 
@@ -38,6 +39,9 @@ describe('Common', function() {
     });
 
     afterEach(async () => {
+        Logger.logs = [];
+        Logger.displayTtyCfg = 'error.debug.info.warn';
+
         // refresh mock instance
         superagentMockInstance.unset();
         resetResonseConfig();
@@ -108,8 +112,23 @@ describe('Common', function() {
                 .flatMap(res => getWalletNextPath({walletId: walletData.id, coin: 'BTC'}))
                 .subscribe(
                     res => {
-                        assert.deepStrictEqual(res.body.err, errorCodes.ServerError);
-                        assert.deepStrictEqual(res.body.data.message, 'create wallet to node error');
+                        assert.deepStrictEqual(res.body.err, errorCodes.OK);
+                        assert.deepStrictEqual(true, Logger.logs.length > 0);
+
+                        // check logs
+                        let hasFlag = false;
+                        for(let i=0; i<Logger.logs.length; i++) {
+                            let log = Logger.logs[i];
+                            if (log.level !== 'warn') {
+                                continue;
+                            }
+
+                            if (log.msg.indexOf(`[coin/next_path] WalletExists [{"id":"${walletData.id}"}]`) !== -1) {
+                                hasFlag = true;
+                                break;
+                            }
+                        }
+                        assert.deepStrictEqual(true, hasFlag);
 
                         done();
                     },
