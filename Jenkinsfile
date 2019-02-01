@@ -31,7 +31,7 @@ pipeline {
               deployCfg.sshUser = "root"
               deployCfg.sshPassword = ""
               deployCfg.customCommand = ""
-              deployCfg.customEnv = ""
+              deployCfg.customEnv = "-e NODE_ENV=local -e MONGO_URI=mongodb://mongo/btc-gateway -e BTC_RPC_URI=http://nginx-proxy:18080"
 
               while(true) {
                 deployCfg = input(id: 'deployCfg', message: 'Publish Configure', parameters: [
@@ -88,7 +88,7 @@ pipeline {
 
               def command = deployCfg.customCommand
               if (!command || command == "") {
-                command = "docker run -id ${deployCfg.customEnv} --name btc-gateway -p 5000:3000 ${deployCfg.buildImageName}"
+                command = "docker run -id ${deployCfg.customEnv} --name btc-gateway --link nginx-proxy:nginx-proxy --link mongodb:mongo -p 5000:3000 ${deployCfg.buildImageName}"
               } else {
                 deployCfg.customEnv = 'docker run ' + deployCfg.customEnv
                 command = command.replace('docker run ', deployCfg.customEnv)
